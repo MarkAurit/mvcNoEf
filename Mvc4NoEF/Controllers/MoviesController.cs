@@ -6,6 +6,7 @@ using System.Linq;
 using System.Net;
 using System.Web;
 using System.Web.Mvc;
+using Microsoft.Ajax.Utilities;
 using Mvc4NoEF.Models;
 
 namespace Mvc4NoEF.Controllers
@@ -13,6 +14,7 @@ namespace Mvc4NoEF.Controllers
     public class MoviesController : Controller
     {
         private ApplicationDbContext db = new ApplicationDbContext();
+
         Movie _mo = new Movie();
 
         // GET: Movies
@@ -82,10 +84,13 @@ namespace Mvc4NoEF.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Edit([Bind(Include = "MovieID,Name,Email,FamilyFriendly,Abstract")] Movie movie)
         {
+            //var dal = DataAccessLayer.GetInstance();
             if (ModelState.IsValid)
             {
                 db.Entry(movie).State = EntityState.Modified;
-                db.SaveChanges();
+                DataAccessLayer.SaveMovie(movie.Name, movie.Email, movie.Abstract, movie.MovieID);
+                //DataAccessLayer
+                //db.SaveChanges();
                 return RedirectToAction("Index");
             }
             return View(movie);
