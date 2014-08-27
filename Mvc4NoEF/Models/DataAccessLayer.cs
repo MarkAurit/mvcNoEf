@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Web;
 using System.Data.Common;
@@ -49,5 +50,22 @@ namespace Mvc4NoEF.Models
             return (int)spReturn;
         }
 
+        public static IDataReader GetReader(string spName)
+        {
+            GetInstance();
+            var dbCommand = _dalDb.GetStoredProcCommand(spName);
+            return _dalDb.ExecuteReader(dbCommand);
+        }
+
+
+
+    }
+
+    public static class StaticsDb
+    {
+        public static SqlDataReader AsSqlDataReader(this IDataReader reader)
+        {
+            return (SqlDataReader)((RefCountingDataReader)reader).InnerReader;
+        }       
     }
 }

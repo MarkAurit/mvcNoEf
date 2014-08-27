@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Data.SqlClient;
+using System.Diagnostics;
 using System.Linq;
 using System.Web;
+using Microsoft.Practices.EnterpriseLibrary.Data;
 
 namespace Mvc4NoEF.Models
 {
@@ -21,7 +24,7 @@ namespace Mvc4NoEF.Models
 
         public Movie() { }
 
-        public Movie(int id, string name, string email, string movieAbstract)
+        public Movie(int id, string name, string email, string movieAbstract, int familyFriendly=1)
         {
             this.MovieID = id;
             this.Name = name;
@@ -40,7 +43,8 @@ namespace Mvc4NoEF.Models
                 1,
                 "Nada Movie",
                 "ko@knock.com",
-                "now is the time for all good men"
+                "now is the time for all good men",
+                1
 
             );
             return mo;
@@ -49,22 +53,41 @@ namespace Mvc4NoEF.Models
         public IEnumerable<Movie> GetMovies()
         {
             List<Movie> lmo = new List<Movie>();
-            Movie mo = new Movie(
-                1,
-                "Nada Movie",
-                "ko@knock.com",
-                "now is the time for all good men"
+            //Movie mo = new Movie(
+            //    1,
+            //    "Nada Movie",
+            //    "ko@knock.com",
+            //    "now is the time for all good men"
 
-            );
-            lmo.Add(mo);
-            Movie mo2 = new Movie(
-                2,
-                "Super Man",
-                "jimmy@knock.com",
-                "stay away from the green rock"
+            //);
+            //lmo.Add(mo);
+            //Movie mo2 = new Movie(
+            //    2,
+            //    "Super Man",
+            //    "jimmy@knock.com",
+            //    "stay away from the green rock"
 
-            );
-            lmo.Add(mo2);
+            //);
+            //lmo.Add(mo2);
+            SqlDataReader dr = null;
+            using (var reader = DataAccessLayer.GetReader("pMoviesGet"))
+            {
+                //dr = StaticsDb.AsSqlDataReader(dr);
+                dr = (SqlDataReader)((RefCountingDataReader)reader).InnerReader;
+                if (dr.HasRows)
+                {
+                    while (dr.Read())
+                    {
+                        lmo.Add(new Movie(
+                            dr.GetInt32(0)
+                            ,dr[1].ToString()
+                            ,dr[2].ToString()
+                            ,dr[3].ToString()
+                            //,dr.GetInt16(4)
+                            ));
+                    }
+                }
+            }
             return lmo;
         }
     }
