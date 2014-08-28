@@ -53,6 +53,25 @@ namespace Mvc4NoEF.Models
         public IEnumerable<Movie> GetMovies()
         {
             List<Movie> lmo = new List<Movie>();
+            using (var reader = DataAccessLayer.GetReader("pMoviesGet"))
+            {
+                while (reader.Read())
+                {
+                    lmo.Add(new Movie(
+                        reader.GetInt32(0)
+                        , reader[1].ToString()
+                        , reader[2].ToString()
+                        , reader[3].ToString()
+                        //,dr.GetInt16(4)
+                        ));
+                }
+            }
+            return lmo;
+        }
+
+        public IEnumerable<Movie> GetMoviesOld()
+        {
+            List<Movie> lmo = new List<Movie>();
             //Movie mo = new Movie(
             //    1,
             //    "Nada Movie",
@@ -91,6 +110,8 @@ namespace Mvc4NoEF.Models
             return lmo;
         }
     }
+
+
 
 
 }
